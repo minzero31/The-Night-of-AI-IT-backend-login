@@ -30,6 +30,10 @@ repositories {
 dependencies {
 
   implementation('org.springframework.boot:spring-boot-starter-web')
+  implementation('org.springframework.boot:spring-boot-starter-security')
+//Spring Security 사용하기 위한 starter 추가
+  implementation('org.thymeleaf.extras:thymeleaf-extras-springsecurity6')
+//thymeleaf에서 Spring Security를 사용하기 위한 의존성 추가
   testImplementation('org.springframework.boot:spring-boot-starter-test') {
     exclude group: 'org.mockito', module: 'mockito-core'
   }
