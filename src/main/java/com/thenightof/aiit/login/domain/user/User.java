@@ -11,28 +11,33 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
-
+@Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Entity
 public class User implements UserDetails {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id", updatable = false)
-    private Long id;
+    @Id
+    @Column(name = "user_id", nullable = false, length = 10, unique = true)
+    private String userId; // 학번
 
-    @Column(name="email", nullable = false, unique=true)
-    private String email;
+    @Column(name = "user_name", nullable = false, length = 5)
+    private String userName; // 실명
 
-    @Column(name="password")
-    private String password;
+    @Column(name = "user_pw", nullable = false, length = 30)
+    private String userPw; // 비밀번호
 
+    @Column(name = "user_scode", nullable = false, length = 10)
+    private String userScode; // 입장코드, 모든 사용자가 동일 코드 소유
+
+    // 생성자에 기본 입장 코드를 추가하고, Builder 패턴으로 필요한 필드만 설정
     @Builder
-    public User(String email, String password, String auth) {
-        this.email = email;
-        this.password = password;
+    public User(String userId, String userName, String userPw, String userScode) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userPw = userPw;
+        this.userScode = userScode != null ? userScode : "DEFAULT_CODE"; // 기본 입장 코드 설정
+
     }
 
     @Override // 권한 반환
@@ -43,13 +48,13 @@ public class User implements UserDetails {
     //사용자의 id 반환 (고유값)
     @Override
     public String getUsername() {
-        return email;
+        return userId;
     }
 
     //사용자의 패스워드 반환
     @Override
     public String getPassword() {
-        return password;
+        return userPw;
     }
 
     //계정 만료 여부 반환
