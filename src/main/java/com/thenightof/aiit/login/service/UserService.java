@@ -19,8 +19,6 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    // 회원가입
-    // UserService.java
     public UserResponseDto register(UserRequestDto requestDto) {
         // scode 확인
         if (!requestDto.getScode().equals("ssdflkjlkj294")) {
@@ -34,14 +32,13 @@ public class UserService implements UserDetailsService {
         User user = User.builder()
                 .userId(requestDto.getUserId())
                 .userName(requestDto.getUserName())
-                .password(requestDto.getPassword()) // 암호화된 비밀번호 사용
+                .password(requestDto.getPassword()) // 암호화 없이 비밀번호 저장
                 .build();
         userRepository.save(user);
 
         return new UserResponseDto(true, "회원가입 성공", user.getUserName());
     }
 
-    // 로그인 메서드
     public UserResponseDto login(UserRequestDto requestDto) {
         Optional<User> userOptional = userRepository.findByUserId(requestDto.getUserId());
 
@@ -50,6 +47,7 @@ public class UserService implements UserDetailsService {
         }
 
         User user = userOptional.get();
+        // 비밀번호를 그대로 비교
         if (!user.getPassword().equals(requestDto.getPassword())) {
             return new UserResponseDto(false, "로그인 실패. 아이디와 비밀번호를 확인해주세요.", null);
         }
@@ -57,7 +55,6 @@ public class UserService implements UserDetailsService {
         return new UserResponseDto(true, "로그인 성공", user.getUserName());
     }
 
-    // UserDetailsService 인터페이스 구현
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         return userRepository.findByUserId(userId)
