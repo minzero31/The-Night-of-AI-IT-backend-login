@@ -12,32 +12,31 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 
-@Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Entity
 public class User implements UserDetails {
+
     @Id
-    @Column(name = "user_id", nullable = false, length = 10, unique = true)
-    private String userId; // 학번
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false)
+    private Long id;
 
-    @Column(name = "user_name", nullable = false, length = 5)
-    private String userName; // 실명
+    @Column(name = "user_id", nullable = false, unique = true)
+    private String userId; // 학번 필드로 변경
 
-    @Column(name = "user_pw", nullable = false, length = 30)
-    private String userPw; // 비밀번호
+    @Column(name = "user_name") // 사용자 이름 필드
+    private String userName; // 사용자 이름 필드
 
-    @Column(name = "user_scode", nullable = false, length = 10)
-    private String userScode; // 입장코드, 모든 사용자가 동일 코드 소유
+    @Column(name = "password")
+    private String password;
 
-    // 생성자에 기본 입장 코드를 추가하고, Builder 패턴으로 필요한 필드만 설정
     @Builder
-    public User(String userId, String userName, String userPw, String userScode) {
+    public User(String userId, String userName, String password) { // userName을 포함
         this.userId = userId;
-        this.userName = userName;
-        this.userPw = userPw;
-        this.userScode = userScode != null ? userScode : "DEFAULT_CODE"; // 기본 입장 코드 설정
-
+        this.userName = userName; // 사용자 이름 초기화
+        this.password = password;
     }
 
     @Override // 권한 반환
@@ -45,39 +44,33 @@ public class User implements UserDetails {
         return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
-    //사용자의 id 반환 (고유값)
+    // 사용자의 id 반환 (고유값)
     @Override
     public String getUsername() {
         return userId;
     }
 
-    //사용자의 패스워드 반환
+    // 사용자의 패스워드 반환
     @Override
     public String getPassword() {
-        return userPw;
+        return password;
     }
 
-    //계정 만료 여부 반환
-    @Override
-    public boolean isAccountNonExpired() {
-        return true; // true -> 만료되지 않았음
+    // 사용자 이름 반환
+    public String getUserName() {
+        return userName;
     }
 
-    //계정 잠금 여부 반환
+    // 계정 만료 여부, 계정 잠금 여부, 패스워드 만료 여부, 계정 사용 가능 여부 반환 메서드들 (기본 true)
     @Override
-    public boolean isAccountNonLocked() {
-        return true; //true -> 잠금되지 않았음
-    }
+    public boolean isAccountNonExpired() { return true; }
 
-    //패스워드의 만료 여부 반환
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true; //true -> 만료되지 않았음
-    }
+    public boolean isAccountNonLocked() { return true; }
 
-    //계정 사용 가능 여부 반환
     @Override
-    public boolean isEnabled() {
-        return true; //true -> 사용 가능
-    }
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }
