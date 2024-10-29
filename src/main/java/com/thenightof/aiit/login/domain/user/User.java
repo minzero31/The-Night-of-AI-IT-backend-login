@@ -1,14 +1,17 @@
 package com.thenightof.aiit.login.domain.user;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 
 @Table(name = "users")
@@ -32,9 +35,9 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    @Override //권한 반환
+    @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("user"));
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     //사용자의 id 반환 (고유값)
